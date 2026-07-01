@@ -141,3 +141,52 @@ code {
     padding-top: 56px;
   }
 }
+
+/* ===== Mobile padding trim ===== */
+@media (max-width: 768px) {
+  /* Trim the big page padding on phones */
+  .app-main > div {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* ===== Mobile: stack page headers so buttons don't overlap ===== */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .page-header button {
+    width: 100%;
+  }
+}
+
+/* ===== Desktop vs mobile display toggles ===== */
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: block; }
+}
+
+/* ===== Detail page mobile fixes ===== */
+@media (max-width: 768px) {
+  /* Stack the name and action buttons vertically */
+  .detail-header {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  /* Make the action buttons full-width and evenly spread */
+  .detail-actions {
+    width: 100%;
+  }
+  .detail-actions button {
+    flex: 1;
+  }
+  /* Balance summary stacks into one column so nothing squishes */
+  .balance-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}

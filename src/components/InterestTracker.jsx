@@ -277,7 +277,7 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
         </button>
 
         <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)', padding: '32px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+          <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase', color: isClosed ? '#9ca3af' : '#059669', marginBottom: '4px' }}>
                 {isClosed ? `Closed${a.closed_date ? ' · ' + fmtDate(a.closed_date) : ''}` : 'Active'}
@@ -288,7 +288,7 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
               </div>
             </div>
             {!isEditingAgreement && (
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="detail-actions" style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={() => { setEditAgreement(a); setIsEditingAgreement(true) }} style={btnBlue}>Edit</button>
                 <button onClick={() => toggleClosed(a)} style={isClosed ? btnGreen : btnGray}>{isClosed ? 'Reopen' : 'Mark Closed'}</button>
                 <button onClick={() => handleDeleteAgreement(a.id)} style={btnRed}>Delete</button>
@@ -321,7 +321,7 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
                 <Field label="Last Paid" value={fmtDate(lastPaymentDate(a.id))} />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', backgroundColor: '#f9fafb', padding: '20px', borderRadius: '10px' }}>
+              <div className="balance-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', backgroundColor: '#f9fafb', padding: '20px', borderRadius: '10px' }}>
                 <div>
                   <div style={statLbl}>TOTAL DUE {isClosed ? '(AT CLOSING)' : '(ACCRUED)'}</div>
                   <div style={{ fontSize: '22px', fontWeight: '700', color: '#111827' }}>{fmtMoney(due)}</div>
@@ -351,7 +351,7 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
 
         {/* Payment history */}
         <div style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)', padding: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#111827', margin: 0 }}>Payment History</h2>
             <button onClick={() => setShowLogForm(!showLogForm)} style={{ padding: '10px 20px', backgroundColor: showLogForm ? '#6b7280' : '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}>
               {showLogForm ? '✕ Cancel' : '+ Log Payment'}
@@ -435,7 +435,7 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
   // ============ LIST PAGE ============
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#111827', marginBottom: '8px' }}>💰 {isMonthly ? 'Monthly Interests' : 'Yearly Interests'}</h1>
           <p style={{ fontSize: '14px', color: '#6b7280' }}>{isMonthly ? 'Interest paid on a monthly cycle' : 'Interest paid yearly'}</p>
@@ -487,53 +487,84 @@ export default function InterestTracker({ filterType = 'Monthly' }) {
         </form>
       )}
 
-      {records.length === 0 ? (
+{records.length === 0 ? (
         <div style={{ backgroundColor: 'white', padding: '60px 40px', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>💰</div>
           <p style={{ color: '#6b7280', fontSize: '16px' }}>No records match this filter.</p>
         </div>
       ) : (
-        <div style={{ overflowX: 'auto', backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f9fafb' }}>
-                <th style={th}>Person</th><th style={th}>Principal</th><th style={th}>Rate</th>
-                {isMonthly && <th style={th}>Frequency</th>}
-                <th style={th}>Interest / Period</th><th style={th}>Last Paid</th><th style={th}>Outstanding</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map(a => {
-                const last = lastPaymentDate(a.id)
-                const bal = outstanding(a)
-                const isClosed = a.status === 'Closed'
-                return (
-                  <tr key={a.id}>
-                    <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
-                      <button onClick={() => openAgreement(a)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}>
-                        <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase', color: isClosed ? '#9ca3af' : '#059669', marginBottom: '2px' }}>
-                          {isClosed ? 'Closed' : 'Active'}
-                        </div>
-                        <div style={{ fontSize: '15px', color: '#2563eb', fontWeight: '700', textDecoration: 'underline' }}>{a.person_name}</div>
-                      </button>
-                    </td>
-                    <td style={td}>{fmtMoney(a.principal_amount)}</td>
-                    <td style={td}>{a.interest_rate ? `${a.interest_rate}%` : '-'}</td>
-                    {isMonthly && <td style={td}>{a.month_interval === 1 ? 'Every month' : `Every ${a.month_interval} months`}</td>}
-                    <td style={{...td, color: '#059669', fontWeight: '700'}}>{fmtMoney(calcInterest(a))}</td>
-                    <td style={td}>{last ? fmtDate(last) : 'Never'}</td>
-                    <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
-                      {bal > 0
-                        ? <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', backgroundColor: '#fee2e2', color: '#991b1b' }}>⏳ {fmtMoney(bal)} pending</span>
-                        : <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', backgroundColor: '#d1fae5', color: '#065f46' }}>✓ Up to date</span>
-                      }
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* DESKTOP TABLE */}
+          <div className="desktop-only" style={{ overflowX: 'auto', backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f9fafb' }}>
+                  <th style={th}>Person</th><th style={th}>Principal</th><th style={th}>Rate</th>
+                  {isMonthly && <th style={th}>Frequency</th>}
+                  <th style={th}>Interest / Period</th><th style={th}>Last Paid</th><th style={th}>Outstanding</th>
+                </tr>
+              </thead>
+              <tbody>
+                {records.map(a => {
+                  const last = lastPaymentDate(a.id)
+                  const bal = outstanding(a)
+                  const isClosed = a.status === 'Closed'
+                  return (
+                    <tr key={a.id}>
+                      <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
+                        <button onClick={() => openAgreement(a)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}>
+                          <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase', color: isClosed ? '#9ca3af' : '#059669', marginBottom: '2px' }}>{isClosed ? 'Closed' : 'Active'}</div>
+                          <div style={{ fontSize: '15px', color: '#2563eb', fontWeight: '700', textDecoration: 'underline' }}>{a.person_name}</div>
+                        </button>
+                      </td>
+                      <td style={td}>{fmtMoney(a.principal_amount)}</td>
+                      <td style={td}>{a.interest_rate ? `${a.interest_rate}%` : '-'}</td>
+                      {isMonthly && <td style={td}>{a.month_interval === 1 ? 'Every month' : `Every ${a.month_interval} months`}</td>}
+                      <td style={{...td, color: '#059669', fontWeight: '700'}}>{fmtMoney(calcInterest(a))}</td>
+                      <td style={td}>{last ? fmtDate(last) : 'Never'}</td>
+                      <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
+                        {bal > 0
+                          ? <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', backgroundColor: '#fee2e2', color: '#991b1b' }}>⏳ {fmtMoney(bal)} pending</span>
+                          : <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', backgroundColor: '#d1fae5', color: '#065f46' }}>✓ Up to date</span>
+                        }
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* MOBILE CARDS */}
+          <div className="mobile-only">
+            {records.map(a => {
+              const last = lastPaymentDate(a.id)
+              const bal = outstanding(a)
+              const isClosed = a.status === 'Closed'
+              return (
+                <div key={a.id} onClick={() => openAgreement(a)} style={{ backgroundColor: 'white', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1)', padding: '18px', marginBottom: '14px', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase', color: isClosed ? '#9ca3af' : '#059669', marginBottom: '2px' }}>{isClosed ? 'Closed' : 'Active'}</div>
+                      <div style={{ fontSize: '18px', color: '#2563eb', fontWeight: '700' }}>{a.person_name}</div>
+                    </div>
+                    {bal > 0
+                      ? <span style={{ padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', backgroundColor: '#fee2e2', color: '#991b1b', whiteSpace: 'nowrap' }}>⏳ {fmtMoney(bal)}</span>
+                      : <span style={{ padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', backgroundColor: '#d1fae5', color: '#065f46', whiteSpace: 'nowrap' }}>✓ Paid</span>
+                    }
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px' }}>
+                    <CardRow label="Principal" value={fmtMoney(a.principal_amount)} />
+                    <CardRow label="Rate" value={a.interest_rate ? `${a.interest_rate}%` : '-'} />
+                    {isMonthly && <CardRow label="Frequency" value={a.month_interval === 1 ? 'Every month' : `Every ${a.month_interval} mo`} />}
+                    <CardRow label="Interest / Period" value={fmtMoney(calcInterest(a))} green />
+                    <CardRow label="Last Paid" value={last ? fmtDate(last) : 'Never'} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </>
       )}
     </div>
   )
@@ -544,6 +575,15 @@ function Field({ label, value }) {
     <div>
       <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '15px', color: '#111827', fontWeight: '500' }}>{value}</div>
+    </div>
+  )
+}
+
+function CardRow({ label, value, green }) {
+  return (
+    <div>
+      <div style={{ fontSize: '11px', color: '#9ca3af', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.03em', marginBottom: '2px' }}>{label}</div>
+      <div style={{ fontSize: '14px', color: green ? '#059669' : '#111827', fontWeight: green ? '700' : '500' }}>{value}</div>
     </div>
   )
 }
