@@ -10,7 +10,6 @@ import PropertyDetails from './components/PropertyDetails'
 import Dashboard from './components/Dashboard'
 import Gold from './components/Gold'
 import Tenants from './components/Tenants'
-import RentalOwners from './components/RentalOwners'
 import OutstandingBalances from './components/OutstandingBalances'
 import RentalProperties from './components/RentalProperties'
 import './App.css'
@@ -20,6 +19,13 @@ function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [rentalExpanded, setRentalExpanded] = useState(false)
+  const [interestExpanded, setInterestExpanded] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+function go(tab) {
+  setActiveTab(tab)
+  setSidebarOpen(false)
+  }
 
   // Check if user is logged in on mount
   useEffect(() => {
@@ -144,8 +150,19 @@ function App() {
   // If logged in, show main app with sidebar
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      {/* Hamburger button (mobile only) */}
+      <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+        ☰
+      </button>
+
+      {/* Overlay (mobile only, when sidebar open) */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'show' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      ></div>
+
       {/* Sidebar */}
-      <div style={{
+      <div className={`app-sidebar ${sidebarOpen ? 'open' : ''}`} style={{
         width: '260px',
         backgroundColor: '#ffffff',
         borderRight: '1px solid #e5e7eb',
@@ -177,12 +194,12 @@ function App() {
         {/* Navigation Items */}
         <nav style={{ flex: 1, padding: '16px 12px', overflowY: 'auto' }}>
           {/* Dashboard */}
-          <button onClick={() => setActiveTab('dashboard')} style={navBtnStyle(activeTab === 'dashboard')}>
+          <button onClick={() => go('dashboard')} style={navBtnStyle(activeTab === 'dashboard')}>
             <span style={{ fontSize: '18px' }}>📊</span> Dashboard
           </button>
 
           {/* Expenses */}
-          <button onClick={() => setActiveTab('expenses')} style={navBtnStyle(activeTab === 'expenses')}>
+          <button onClick={() => go('expenses')} style={navBtnStyle(activeTab === 'expenses')}>
             <span style={{ fontSize: '18px' }}>💸</span> Expenses
           </button>
 
@@ -190,7 +207,7 @@ function App() {
           <button
             onClick={() => setRentalExpanded(!rentalExpanded)}
             style={{
-              ...navBtnStyle(['rental', 'units', 'tenants', 'owners', 'outstanding'].includes(activeTab)),
+              ...navBtnStyle(['rental', 'units', 'tenants', 'outstanding'].includes(activeTab)),
               justifyContent: 'space-between'
             }}
           >
@@ -203,46 +220,63 @@ function App() {
           {/* Rental sub-items */}
           {rentalExpanded && (
             <div style={{ marginLeft: '16px', borderLeft: '1px solid #e5e7eb', paddingLeft: '8px' }}>
-              <button onClick={() => setActiveTab('rental')} style={subNavBtnStyle(activeTab === 'rental')}>
+              <button onClick={() => go('rental')} style={subNavBtnStyle(activeTab === 'rental')}>
                 Rent Status
               </button>
-              <button onClick={() => setActiveTab('units')} style={subNavBtnStyle(activeTab === 'units')}>
+              <button onClick={() => go('units')} style={subNavBtnStyle(activeTab === 'units')}>
                 Properties
               </button>
-              <button onClick={() => setActiveTab('tenants')} style={subNavBtnStyle(activeTab === 'tenants')}>
+              <button onClick={() => go('tenants')} style={subNavBtnStyle(activeTab === 'tenants')}>
                 Tenants
               </button>
-              <button onClick={() => setActiveTab('owners')} style={subNavBtnStyle(activeTab === 'owners')}>
-                Rental Owners
-              </button>
-              <button onClick={() => setActiveTab('outstanding')} style={subNavBtnStyle(activeTab === 'outstanding')}>
+              <button onClick={() => go('outstanding')} style={subNavBtnStyle(activeTab === 'outstanding')}>
                 Outstanding Balances
               </button>
             </div>
           )}
 
-          {/* Interest */}
-          <button onClick={() => setActiveTab('interest')} style={navBtnStyle(activeTab === 'interest')}>
-            <span style={{ fontSize: '18px' }}>💰</span> Interest
+          {/* Interest — expandable */}
+          <button
+            onClick={() => setInterestExpanded(!interestExpanded)}
+            style={{
+              ...navBtnStyle(['interest-monthly', 'interest-yearly'].includes(activeTab)),
+              justifyContent: 'space-between'
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '18px' }}>💰</span> Interest
+            </span>
+            <span style={{ fontSize: '12px' }}>{interestExpanded ? '▼' : '▶'}</span>
           </button>
 
+          {interestExpanded && (
+            <div style={{ marginLeft: '16px', borderLeft: '1px solid #e5e7eb', paddingLeft: '8px' }}>
+              <button onClick={() => go('interest-monthly')} style={subNavBtnStyle(activeTab === 'interest-monthly')}>
+                Monthly Interests
+              </button>
+              <button onClick={() => go('interest-yearly')} style={subNavBtnStyle(activeTab === 'interest-yearly')}>
+                Yearly Interests
+              </button>
+            </div>
+          )}
+
           {/* Insurance */}
-          <button onClick={() => setActiveTab('insurance')} style={navBtnStyle(activeTab === 'insurance')}>
+          <button onClick={() => go('insurance')} style={navBtnStyle(activeTab === 'insurance')}>
             <span style={{ fontSize: '18px' }}>📋</span> Insurance
           </button>
 
           {/* House Taxes */}
-          <button onClick={() => setActiveTab('housetaxes')} style={navBtnStyle(activeTab === 'housetaxes')}>
+          <button onClick={() => go('housetaxes')} style={navBtnStyle(activeTab === 'housetaxes')}>
             <span style={{ fontSize: '18px' }}>🏘️</span> House Taxes
           </button>
 
           {/* Properties (your original property records module) */}
-          <button onClick={() => setActiveTab('properties')} style={navBtnStyle(activeTab === 'properties')}>
+          <button onClick={() => go('properties')} style={navBtnStyle(activeTab === 'properties')}>
             <span style={{ fontSize: '18px' }}>🏘️</span> Properties
           </button>
 
           {/* Gold */}
-          <button onClick={() => setActiveTab('gold')} style={navBtnStyle(activeTab === 'gold')}>
+          <button onClick={() => go('gold')} style={navBtnStyle(activeTab === 'gold')}>
             <span style={{ fontSize: '18px' }}>💎</span> Gold
           </button>
         </nav>
@@ -284,15 +318,15 @@ function App() {
       </div>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div className="app-main" style={{ flex: 1, overflowY: 'auto' }}>
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'expenses' && <Expenses />}
         {activeTab === 'rental' && <RentalIncome />}
         {activeTab === 'units' && <RentalProperties />}
         {activeTab === 'tenants' && <Tenants />}
-        {activeTab === 'owners' && <RentalOwners />}
         {activeTab === 'outstanding' && <OutstandingBalances />}
-        {activeTab === 'interest' && <InterestTracker />}
+        {activeTab === 'interest-monthly' && <InterestTracker filterType="Monthly" />}
+        {activeTab === 'interest-yearly' && <InterestTracker filterType="Yearly" />}
         {activeTab === 'insurance' && <InsurancePolicies />}
         {activeTab === 'housetaxes' && <HouseTaxes />}
         {activeTab === 'properties' && <PropertyDetails />}
