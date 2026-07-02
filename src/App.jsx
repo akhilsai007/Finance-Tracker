@@ -151,8 +151,8 @@ function go(tab) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
       {/* Hamburger button (mobile only) */}
-      <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
-        ☰
+      <button className="hamburger-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        {sidebarOpen ? '☰' : '☰'}
       </button>
 
       {/* Overlay (mobile only, when sidebar open) */}
@@ -289,11 +289,16 @@ function go(tab) {
           <div style={{
             padding: '8px 12px',
             marginBottom: '8px',
-            fontSize: '12px',
-            color: '#6b7280',
             wordBreak: 'break-all'
           }}>
-            {user.email}
+            {user.user_metadata?.first_name && (
+              <div style={{ fontSize: '14px', fontWeight: '700', color: '#111827', marginBottom: '2px' }}>
+                {user.user_metadata.first_name}
+              </div>
+            )}
+            <div style={{ fontSize: '12px', color: '#6b7280' }}>
+              {user.email}
+            </div>
           </div>
           <button
             onClick={handleLogout}
